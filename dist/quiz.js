@@ -9,6 +9,10 @@ let timer;
 let deadline;
 let seconds;
 let history = [];
+let startedAt;
+let startedTick;
+let elapsedSeconds;
+let report;
 
 function chip(group, value, label, checked) {
   const box = document.createElement('input');
@@ -119,6 +123,8 @@ byId('setup').onsubmit = event => {
   seconds = Number(byId('timing').value);
   byId('setup').hidden = true;
   byId('play').hidden = false;
+  startedAt = new Date();
+  startedTick = performance.now();
   showQuestion();
 };
 function showQuestion() {
@@ -155,6 +161,9 @@ function answer(choice) {
   if (seconds && Date.now() >= deadline) choice = null;
   const q = questions[current];
   history.push(choice);
+  if (history.length === questions.length) {
+    elapsedSeconds = Math.max(0, Math.round((performance.now() - startedTick) / 1000));
+  }
   [...byId('answers').children].forEach((button, i) => {
     button.disabled = true;
     if (q.choices[i] === q.term) button.classList.add('correct');
@@ -175,6 +184,33 @@ byId('next').onclick = () => {
   byId('results').hidden = false;
   byId('score').textContent = 'Your score: ' + correct + ' / ' + questions.length;
   byId('summary').textContent = Math.round(correct / questions.length * 100) + '% correct';
+  const unitNames = selected('units').map(id => 'Unit ' + id).join(' + ');
+  const timing = seconds ? seconds + ' seconds per question' : 'Untimed';
+  const duration = Math.floor(elapsedSeconds / 60) + ' min ' + (elapsedSeconds % 60) + ' sec';
+  const date = startedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  report = { correct, total: questions.length, percent: Math.round(correct / questions.length * 100),
+    date, duration, unitNames, timing, breakdown: [], practice: missed.map(q => q.term) };
+  byId('round-info').textContent = [date, 'Time taken: ' + duration, unitNames, timing].join(' · ');
+  byId('pdf-status').hidden = true;
+  byId('subject-scores').replaceChildren();
+  const icons = { reading: '📖', writing: '✏️', math: '🔢' };
+  for (const [id, subject] of Object.entries(subjects)) {
+    const round = questions.filter(q => q.subject === subject.name);
+    if (!round.length) continue;
+    const earned = round.length - missed.filter(q => q.subject === subject.name).length;
+    report.breakdown.push({ name: subject.name, earned, total: round.length, color: subject.canvas });
+    const badge = document.createElement('span');
+    badge.style.cssText = 'display:inline-block;margin:3px 6px 3px 0;padding:4px 10px;border-radius:8px;font-weight:bold';
+    badge.style.backgroundColor = subject.canvas;
+    badge.style.color = subject.ink;
+    badge.textContent = icons[id] + ' ' + subject.name + ' ' + earned + '/' + round.length;
+    byId('subject-scores').append(badge, ' ');
+  }
+  byId('practice-terms').textContent = missed.length
+    ? '🌱 Words to practice: ' + missed.map(q => q.term).join(', ')
+    : '⭐ Every word correct!';
+  byId('copy-status').textContent = 'Copy your scorecard to paste into an email or a Toddle response.';
+  byId('manual-copy').hidden = true;
   byId('review').replaceChildren();
   if (missed.length) {
     const title = document.createElement('h3');
@@ -194,3 +230,94 @@ byId('again').onclick = () => {
   byId('setup').hidden = false;
   byId('start').focus();
 };
+
+byId('copy-results').onclick = async () => {
+  const card = byId('scorecard');
+  const plain = [...card.children].map(row => row.textContent.trim()).join('\n');
+  const status = byId('copy-status');
+  try {
+    if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined') throw new Error('Text only');
+    await navigator.clipboard.write([new ClipboardItem({
+      'text/html': new Blob([card.outerHTML], { type: 'text/html' }),
+      'text/plain': new Blob([plain], { type: 'text/plain' })
+    })]);
+  } catch {
+    try {
+      await navigator.clipboard.writeText(plain);
+    } catch {
+      const field = byId('manual-copy');
+      field.value = plain;
+      field.hidden = false;
+      field.focus();
+      field.select();
+      status.textContent = 'Your results are selected below. Choose Copy, then paste them into your response.';
+      return;
+    }
+  }
+  byId('manual-copy').hidden = true;
+  status.textContent = 'Results copied! Paste them into your email or Toddle response.';
+};
+
+byId('download-pdf').onclick = async () => {
+  const button = byId('download-pdf');
+  const status = byId('pdf-status');
+  const completed = report;
+  button.disabled = true;
+  try {
+    if (!window.jspdf) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'vendor/jspdf-4.2.1.min.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.append(script);
+      });
+    }
+    downloadReport(completed);
+    status.textContent = 'Your color PDF is ready.';
+  } catch {
+    status.textContent = 'The PDF could not be created. Try Download PDF again.';
+  } finally {
+    status.hidden = false;
+    button.disabled = false;
+  }
+};
+
+function downloadReport(result) {
+  const pdf = new window.jspdf.jsPDF();
+  pdf.setProperties({ title: 'Grade 5 vocabulary quiz results' });
+  function label(value, x, y, size, bold = false) {
+    pdf.setFont('helvetica', bold ? 'bold' : 'normal');
+    pdf.setFontSize(size);
+    pdf.text(value, x, y);
+  }
+  pdf.setFillColor('#FFD4B8');
+  pdf.rect(0, 0, 210, 68, 'F');
+  pdf.setTextColor('#683B27');
+  label('GRADE 5  /  VOCABULARY QUIZ', 18, 20, 13, true);
+  label(result.correct + ' / ' + result.total, 18, 46, 44, true);
+  label(result.percent + '% correct', 18, 58, 16);
+  pdf.setTextColor('#33261f');
+  label('Date taken', 18, 84, 12, true);
+  label(result.date, 18, 92, 14);
+  label('Time taken', 118, 84, 12, true);
+  label(result.duration, 118, 92, 14);
+  label(result.unitNames + '   |   ' + result.timing, 18, 109, 13);
+  label('Subject results', 18, 129, 17, true);
+  let y = 136;
+  for (const subject of result.breakdown) {
+    pdf.setFillColor(subject.color);
+    pdf.roundedRect(18, y, 174, 14, 2, 2, 'F');
+    label(subject.name, 23, y + 9, 13, true);
+    label(subject.earned + ' / ' + subject.total, 162, y + 9, 13);
+    y += 17;
+  }
+  y += 12;
+  label(result.practice.length ? 'Words to practice' : 'Every word correct!', 18, y, 16, true);
+  if (result.practice.length) {
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(12);
+    label(pdf.splitTextToSize(result.practice.join(', '), 174), 18, y + 10, 12);
+  }
+  pdf.save('Vocabulary quiz - ' + result.date.replace(',', '') + '.pdf');
+}

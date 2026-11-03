@@ -37,8 +37,20 @@
     <p id="feedback" role="status"></p><button class="primary" id="next" hidden>Next question →</button>
   </section>
   <section id="results" class="panel" hidden>
-    <h2 id="score" tabindex="-1"></h2><p id="summary"></p>
-    <button class="primary" id="again">Try another quiz</button>
+    <div id="scorecard" style="font-family:Arial,sans-serif;color:#33261f;background:#fffaf4;border:2px solid #683b27;border-radius:14px;padding:20px;line-height:1.5">
+      <strong style="color:#683b27">📚 Grade 5 vocabulary quiz</strong>
+      <h2 id="score" tabindex="-1" style="margin:8px 0 0;color:#683b27"></h2>
+      <p id="summary" style="margin:2px 0;font-weight:bold"></p>
+      <p id="round-info" style="margin:8px 0"></p>
+      <div id="subject-scores"></div>
+      <p id="practice-terms" style="margin:12px 0 0"></p>
+    </div>
+    <div class="result-actions"><button class="primary" id="copy-results">Copy results</button>
+    <button id="download-pdf">Download PDF</button>
+    <button id="again">Try another quiz</button></div>
+    <p id="pdf-status" role="status" hidden></p>
+    <p id="copy-status" role="status"></p>
+    <textarea id="manual-copy" aria-label="Quiz results to copy" rows="8" readonly hidden></textarea>
     <div id="review"></div>
   </section>
 </main>
