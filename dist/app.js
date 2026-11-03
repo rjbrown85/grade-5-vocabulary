@@ -11,6 +11,7 @@ function cardContent(word){
 if(subject){
  const unit=new URLSearchParams(location.search).get('unit');
  if(unit==='all'||subject.units[unit]){
+  document.querySelector('#quiz-link').href += '&unit='+encodeURIComponent(unit);
   document.querySelector('#unit-menu').hidden=true;
   document.querySelector('#vocabulary').hidden=false;
   const heading=unit==='all'?subject.name+', All words':'Unit '+unit+', '+subject.units[unit].title;

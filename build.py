@@ -7,6 +7,8 @@ data=json.loads((p/'vocabulary.json').read_text())
 for page in ['home',*data]:
  s=data.get(page); name=s['name'] if s else 'Vocabulary'
  nav=''.join(f'<a href="{k}.html" '+('aria-current="page"' if k==page else '')+f'>{v["name"]}</a>' for k,v in data.items())
+ quiz_url='quiz.html' if not s else f'quiz.html?subject={page}'
+ nav+=f'<a id="quiz-link" href="{quiz_url}">Take a quiz</a>'
  body=f'<a class="skip" href="#main">Skip to vocabulary</a><header><a class="home" href="index.html">⌂ Home</a><nav aria-label="Subjects">{nav}</nav></header><main id="main">'
  if not s:
   body+='<h1>Vocabulary</h1><div class="subjects">'

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vocabulary quiz | Grade 5E</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="quiz.css">
+  <script defer src="words.js"></script>
+  <script defer src="definitions.js"></script>
+  <script defer src="quiz.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to quiz</a>
+<header><a class="home" href="index.html">⌂ Home</a><nav aria-label="Subjects"><a href="reading.html">Reading</a><a href="writing.html">Writing</a><a href="math.html">Math</a></nav></header>
+<main id="main">
+  <h1>Vocabulary quiz</h1>
+  <form id="setup" class="panel">
+    <fieldset><legend>Which subjects?</legend><div class="chips" id="subjects"></div></fieldset>
+    <fieldset><legend>Which units?</legend><div class="chips" id="units"></div></fieldset>
+    <div class="settings">
+      <label>Questions <select id="length"></select></label>
+      <label>Question style <select id="style"><option value="mixed">Mix both styles</option><option value="word">Choose the word</option><option value="definition">Choose the definition</option></select></label>
+      <label>Timer <select id="timing"><option value="0">Untimed</option><option value="30">30 seconds per question</option><option value="60">60 seconds per question</option></select></label>
+    </div>
+    <p id="pool" role="status"></p>
+    <button class="primary" id="start">Start quiz →</button>
+  </form>
+  <section id="play" class="panel" hidden>
+    <div class="status"><span id="progress"></span><span id="clock" role="timer"></span></div>
+    <p id="instruction"></p><h2 id="prompt" tabindex="-1"></h2>
+    <div id="answers"></div>
+    <p id="feedback" role="status"></p><button class="primary" id="next" hidden>Next question →</button>
+  </section>
+  <section id="results" class="panel" hidden>
+    <h2 id="score" tabindex="-1"></h2><p id="summary"></p>
+    <button class="primary" id="again">Try another quiz</button>
+    <div id="review"></div>
+  </section>
+</main>
+</body>
+</html>
