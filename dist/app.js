@@ -23,7 +23,7 @@ if(subject){
   const all=unique.map(w=>{
    const button=document.createElement('button');button.className='word';button.setAttribute('aria-label','Enlarge '+w.word+' vocabulary card');button.append(cardContent(w));
    button.onclick=()=>{
-    content.replaceChildren(cardContent(w));modal.setAttribute('aria-label',w.word+' vocabulary card');
+    content.replaceChildren(...exploreWord(w));modal.setAttribute('aria-label',w.word+' vocabulary card');
     const note=document.querySelector('#card-note');let text='';
     if(page==='reading'&&unit!=='2'&&w.word==='summary')text='For nonfiction, a summary gives the main idea and key details in your own words.';
     if(page==='writing'&&unit!=='1'&&w.word==='paragraph')text='In narratives, use SPITE to decide when a new paragraph begins.';

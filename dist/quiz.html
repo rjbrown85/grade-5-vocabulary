@@ -16,6 +16,7 @@
 <main id="main">
   <h1>Vocabulary quiz</h1>
   <form id="setup" class="panel">
+    <label class="student-name">Your name (optional)<input id="student-name" maxlength="64" autocomplete="off" placeholder="Name for your results"></label>
     <fieldset aria-describedby="mix-hint">
       <legend>Choose your subjects</legend>
       <div class="mix-tools"><p id="mix-hint">Pick one subject or combine them.</p><button type="button" id="all-subjects">Select all subjects</button></div>
@@ -41,6 +42,7 @@
       <strong style="color:#683b27">📚 Grade 5 vocabulary quiz</strong>
       <h2 id="score" tabindex="-1" style="margin:8px 0 0;color:#683b27"></h2>
       <p id="summary" style="margin:2px 0;font-weight:bold"></p>
+      <p id="result-name" hidden></p>
       <p id="round-info" style="margin:8px 0"></p>
       <div id="subject-scores"></div>
       <p id="practice-terms" style="margin:12px 0 0"></p>

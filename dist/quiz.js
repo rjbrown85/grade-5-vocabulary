@@ -9,6 +9,7 @@ let timer;
 let deadline;
 let seconds;
 let history = [];
+let studentName;
 let startedAt;
 let startedTick;
 let elapsedSeconds;
@@ -123,6 +124,7 @@ byId('setup').onsubmit = event => {
   seconds = Number(byId('timing').value);
   byId('setup').hidden = true;
   byId('play').hidden = false;
+  studentName = byId('student-name').value.trim();
   startedAt = new Date();
   startedTick = performance.now();
   showQuestion();
@@ -188,7 +190,9 @@ byId('next').onclick = () => {
   const timing = seconds ? seconds + ' seconds per question' : 'Untimed';
   const duration = Math.floor(elapsedSeconds / 60) + ' min ' + (elapsedSeconds % 60) + ' sec';
   const date = startedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  report = { correct, total: questions.length, percent: Math.round(correct / questions.length * 100),
+  byId('result-name').textContent = studentName ? 'Student: ' + studentName : '';
+  byId('result-name').hidden = !studentName;
+  report = { studentName, correct, total: questions.length, percent: Math.round(correct / questions.length * 100),
     date, duration, unitNames, timing, breakdown: [], practice: missed.map(q => q.term) };
   byId('round-info').textContent = [date, 'Time taken: ' + duration, unitNames, timing].join(' · ');
   byId('pdf-status').hidden = true;
@@ -298,6 +302,17 @@ function downloadReport(result) {
   label(result.correct + ' / ' + result.total, 18, 46, 44, true);
   label(result.percent + '% correct', 18, 58, 16);
   pdf.setTextColor('#33261f');
+  if (result.studentName) {
+    // Render names with the browser's fonts, including scripts outside the PDF's built-in fonts.
+    const canvas = document.createElement('canvas');
+    canvas.width = 1600;
+    canvas.height = 68;
+    const ctx = canvas.getContext('2d');
+    ctx.font = 'bold 46px sans-serif';
+    ctx.fillStyle = '#33261f';
+    ctx.fillText('Student: ' + result.studentName, 0, 51, canvas.width);
+    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 18, 69, 174, 7.4);
+  }
   label('Date taken', 18, 84, 12, true);
   label(result.date, 18, 92, 14);
   label('Time taken', 118, 84, 12, true);

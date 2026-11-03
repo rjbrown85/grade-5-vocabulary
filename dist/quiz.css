@@ -52,3 +52,5 @@ button:disabled { opacity: .65; cursor: default; }
 .result-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 #copy-status { font-size: 1rem; }
 #manual-copy { width: 100%; padding: 10px; font: inherit; }
+
+.student-name {display:grid;gap:6px;font-weight:bold;margin:0 0 24px}.student-name input {margin:0;border:1px solid #99958a;border-radius:6px;}
