@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="quiz.css">
   <script defer src="words.js"></script>
   <script defer src="definitions.js"></script>
+  <script defer src="examples.js"></script>
+  <script defer src="explore.js"></script>
   <script defer src="quiz.js"></script>
 </head>
 <body>
@@ -33,9 +35,12 @@
   </form>
   <section id="play" class="panel" hidden>
     <div class="status"><span id="progress"></span><span id="clock" role="timer"></span></div>
-    <p id="instruction"></p><h2 id="prompt" tabindex="-1"></h2>
+    <div class="question-layout">
+      <div><p id="instruction"></p><h2 id="prompt" tabindex="-1"></h2></div>
+      <figure class="quiz-model"><div id="quiz-art"></div><figcaption id="quiz-caption"></figcaption></figure>
+    </div>
     <div id="answers"></div>
-    <p id="feedback" role="status"></p><button class="primary" id="next" hidden>Next question →</button>
+    <p id="feedback" role="status"></p><p id="worked-example" hidden></p><button class="primary" id="next" hidden>Next question →</button>
   </section>
   <section id="results" class="panel" hidden>
     <div id="scorecard" style="font-family:Arial,sans-serif;color:#33261f;background:#fffaf4;border:2px solid #683b27;border-radius:14px;padding:20px;line-height:1.5">

@@ -129,12 +129,22 @@ byId('setup').onsubmit = event => {
   startedTick = performance.now();
   showQuestion();
 };
+// Use numeric notation and unlabeled passages so the model does not print the vocabulary answer.
+const quizCaptions = {
+  places: '34.250 = 30 + 4 + 0.2 + 0.05. Each column to the right is worth one tenth as much.',
+  array: 'Six tiles across and four down. The two colors split 24 into 12 + 12.',
+  workshop: '“The bridge was scary.” → “The boards clicked under my shoes, and I grabbed the rail.”'
+};
 function showQuestion() {
   const q = questions[current];
   const chooseWord = q.mode === 'word';
   byId('progress').textContent = q.subject + ' · Question ' + (current + 1) + ' of ' + questions.length;
   byId('instruction').textContent = chooseWord ? 'Which word matches this definition?' : 'What does this word mean?';
   byId('prompt').textContent = chooseWord ? definitions[q.term] : q.term;
+  const [group] = lessons[q.term];
+  byId('quiz-art').innerHTML = exhibitArt(group, true);
+  byId('quiz-caption').textContent = quizCaptions[group] || exhibits[group][1];
+  byId('worked-example').hidden = true;
   byId('answers').replaceChildren();
   for (const term of q.choices) {
     const button = document.createElement('button');
@@ -173,6 +183,8 @@ function answer(choice) {
   });
   const fact = q.term + ' — ' + definitions[q.term];
   byId('feedback').textContent = choice === q.term ? 'Correct!' : (choice === null ? 'Time is up. ' : 'Correct answer: ') + fact;
+  byId('worked-example').textContent = lessons[q.term][1];
+  byId('worked-example').hidden = false;
   byId('next').textContent = current + 1 === questions.length ? 'See my score →' : 'Next question →';
   byId('next').hidden = false;
   byId('next').focus();

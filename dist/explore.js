@@ -1,5 +1,5 @@
 // The diagrams illustrate the shared situation; each word has its own interpretation.
-function exhibitArt(group) {
+function exhibitArt(group, quiz = false) {
   const rect = (x,y,w,h,fill) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${fill}"/>`;
   const text = (x,y,value,size=15) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="${size}" font-family="Arial,sans-serif" font-weight="bold" fill="#30362d">${value}</text>`;
   const repeat = (count, draw) => Array.from({length: count}, (_, i) => draw(i)).join('');
@@ -10,7 +10,7 @@ function exhibitArt(group) {
       shapes = repeat(24,i=>rect(84+i%6*29,8+Math.floor(i/6)*23,25,20,i%6<3?mint:blue));
       break;
     case 'places':
-      shapes = ['Tens','Ones','Tenths','Hundredths','Thousandths'].map((v,i)=>rect(4+i*67,19,64,66,i<2?peach:blue)+text(36+i*67,43,v,10)+text(36+i*67,73,'34250'[i],25)).join('');
+      shapes = (quiz ? ['10','1','0.1','0.01','0.001'] : ['Tens','Ones','Tenths','Hundredths','Thousandths']).map((v,i)=>rect(4+i*67,19,64,66,i<2?peach:blue)+text(36+i*67,43,v,10)+text(36+i*67,73,'34250'[i],25)).join('');
       break;
     case 'data':
       shapes = ['Walk','Bus','Bike'].map((v,i)=>text(40,24+i*33,v)+rect(78,9+i*33,[144,216,72][i],21,[mint,peach,blue][i])+text([235,307,163][i],25+i*33,[8,12,4][i])).join('');
