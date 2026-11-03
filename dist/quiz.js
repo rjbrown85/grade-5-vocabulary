@@ -10,27 +10,27 @@ let deadline;
 let seconds;
 let history = [];
 
-function chip(group, value, label, checked, tint) {
+function chip(group, value, label, checked) {
   const box = document.createElement('input');
   box.type = 'checkbox';
   box.name = group;
   box.value = value;
   box.checked = checked;
   const wrap = document.createElement('label');
-  if (tint) wrap.style.setProperty('--tint', tint);
+
   wrap.append(box, ' ' + label);
   byId(group).append(wrap);
 }
 for (const [id, subject] of Object.entries(subjects)) {
-  chip('subjects', id, subject.name, !preset || preset === subject, subject.canvas);
+  chip('subjects', id, subject.name, !preset || preset === subject);
 }
 for (const id of unitIds) {
   chip('units', id, 'Unit ' + id, !unitIds.includes(selectedUnit) || selectedUnit === id);
 }
-if (preset) {
-  document.body.style.setProperty('--ink', preset.ink);
-  document.body.style.setProperty('--paper', preset.canvas);
-}
+byId('all-subjects').onclick = () => {
+  for (const input of byId('subjects').querySelectorAll('input')) input.checked = true;
+  configure();
+};
 for (let count = 10; count <= 20; count++) byId('length').add(new Option(count, count));
 
 function selected(group) {
@@ -54,7 +54,14 @@ function pools() {
 function configure() {
   const count = new Set(pools().flatMap(group => group.entries.map(term => term.toLowerCase()))).size;
   const valid = count >= Number(byId('length').value);
-  byId('pool').textContent = count ? count + ' words to practice' : 'Choose at least one subject and one unit.';
+  const names = selected('subjects').map(id => subjects[id].name);
+  const units = selected('units');
+  byId('all-subjects').disabled = names.length === Object.keys(subjects).length;
+  byId('all-subjects').textContent = byId('all-subjects').disabled ? 'All subjects selected' : 'Select all subjects';
+  const mix = new Intl.ListFormat('en').format(names);
+  const scope = units.length === 1 ? 'Unit ' + units[0] : 'Units ' + new Intl.ListFormat('en').format(units);
+  byId('pool').textContent = count ? mix + ' · ' + scope + ' · ' + count + ' words'
+    : 'Choose at least one subject and one unit.';
   byId('start').disabled = !valid;
 }
 byId('setup').addEventListener('change', configure);

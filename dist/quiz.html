@@ -16,15 +16,19 @@
 <main id="main">
   <h1>Vocabulary quiz</h1>
   <form id="setup" class="panel">
-    <fieldset><legend>Which subjects?</legend><div class="chips" id="subjects"></div></fieldset>
-    <fieldset><legend>Which units?</legend><div class="chips" id="units"></div></fieldset>
+    <fieldset aria-describedby="mix-hint">
+      <legend>Choose your subjects</legend>
+      <div class="mix-tools"><p id="mix-hint">Pick one subject or combine them.</p><button type="button" id="all-subjects">Select all subjects</button></div>
+      <div class="chips" id="subjects"></div>
+    </fieldset>
+    <fieldset><legend>Choose your units</legend><div class="chips" id="units"></div></fieldset>
     <div class="settings">
       <label>Questions <select id="length"></select></label>
       <label>Question style <select id="style"><option value="mixed">Mix both styles</option><option value="word">Choose the word</option><option value="definition">Choose the definition</option></select></label>
       <label>Timer <select id="timing"><option value="0">Untimed</option><option value="30">30 seconds per question</option><option value="60">60 seconds per question</option></select></label>
     </div>
-    <p id="pool" role="status"></p>
-    <button class="primary" id="start">Start quiz →</button>
+    <div class="launch"><div><strong>Your quiz mix</strong><p id="pool" role="status"></p></div>
+    <button class="primary" id="start" disabled>Start quiz →</button></div>
   </form>
   <section id="play" class="panel" hidden>
     <div class="status"><span id="progress"></span><span id="clock" role="timer"></span></div>
