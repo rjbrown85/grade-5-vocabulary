@@ -14,3 +14,6 @@
 .operation-paths {display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:12px}
 .operation-paths > div {background:#f4f0e6;padding:12px;border-left:4px solid var(--ink);border-radius:6px}
 .operation-paths p {font-size:16px}
+
+.scene-clue {display:block;width:100%;max-height:205px;object-fit:contain;}
+.word-lab figure + h3 {font-size:20px;margin:20px 0 0;}
